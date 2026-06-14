@@ -13,6 +13,9 @@ import '../screens/admin/admin_dashboard.dart';
 import '../screens/admin/manage_users_screen.dart';
 import '../screens/admin/manage_content_screen.dart';
 import '../screens/admin/admin_payments_screen.dart';
+import '../screens/calendar/symptom_history_screen.dart';
+import '../screens/admin/admin_user_detail_screen.dart';
+import '../screens/payment/orders_screen.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -43,8 +46,15 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const ManageContentScreen());
       case '/admin/payments':
         return MaterialPageRoute(builder: (_) => const AdminPaymentsScreen());
+      case '/orders':
+        return MaterialPageRoute(builder: (_) => const OrdersScreen());
       case '/symptom':
         return MaterialPageRoute(builder: (_) => const SymptomScreen());
+      case '/symptom-history':
+        return MaterialPageRoute(builder: (_) => const SymptomHistoryScreen());
+      case '/admin/user-detail':
+        final userId = settings.arguments as String;
+        return MaterialPageRoute(builder: (_) => AdminUserDetailScreen(userId: userId));
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

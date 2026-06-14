@@ -1,4 +1,3 @@
-// lib/screens/admin/manage_content_screen.dart
 import 'package:flutter/material.dart';
 import '../../services/database_service.dart';
 import '../../widgets/common/screen_with_nav.dart';
@@ -13,7 +12,16 @@ class ManageContentScreen extends StatefulWidget {
 class _ManageContentScreenState extends State<ManageContentScreen> {
   final _titleCtrl = TextEditingController();
   final _contentCtrl = TextEditingController();
+  final _imageUrlCtrl = TextEditingController();   // 👈 NEW controller
   String _category = 'general';
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _contentCtrl.dispose();
+    _imageUrlCtrl.dispose();                        // 👈 dispose it
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +48,15 @@ class _ManageContentScreenState extends State<ManageContentScreen> {
               decoration: const InputDecoration(labelText: 'Content'),
             ),
             const SizedBox(height: 12),
+            // 👇 NEW: Image URL field
+            TextField(
+              controller: _imageUrlCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Image URL (optional)',
+                hintText: 'https://example.com/image.jpg',
+              ),
+            ),
+            const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               value: _category,
               items: const [
@@ -61,9 +78,11 @@ class _ManageContentScreenState extends State<ManageContentScreen> {
                   'content': _contentCtrl.text,
                   'category': _category,
                   'is_published': true,
+                  if (_imageUrlCtrl.text.isNotEmpty) 'image_url': _imageUrlCtrl.text,  // 👈 optional
                 });
                 _titleCtrl.clear();
                 _contentCtrl.clear();
+                _imageUrlCtrl.clear();
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Content saved')),

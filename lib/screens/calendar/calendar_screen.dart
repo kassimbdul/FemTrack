@@ -21,10 +21,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   void initState() {
     super.initState();
-    final auth = context.read<AuthProvider>();
-    if (auth.user != null) {
-      context.read<CycleProvider>().loadCycles(auth.user!.id);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+  final auth = context.read<AuthProvider>();
+  if (auth.user != null) {
+    context.read<CycleProvider>().loadCycles(auth.user!.id);
+  }
+});
   }
 
   void _previousMonth() {

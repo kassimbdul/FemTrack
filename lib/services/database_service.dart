@@ -109,6 +109,10 @@ class DatabaseService {
     await _db.from('orders').insert(order);
   }
 
+  static Future<void> updateOrder(String orderId, Map<String, dynamic> data) async {
+    await _db.from('orders').update(data).eq('id', orderId);
+  }
+
   static Future<List<Map<String, dynamic>>> getUserOrders(String userId) async {
     final response = await _db
         .from('orders')
@@ -125,4 +129,26 @@ class DatabaseService {
         .order('created_at', ascending: false);
     return List<Map<String, dynamic>>.from(response);
   }
+
+  static Future<void> createNotification(String userId, String title, String body) async {
+  await _db.from('notifications').insert({
+    'user_id': userId,
+    'title': title,
+    'body': body,
+  });
+}
+
+static Future<List<Map<String, dynamic>>> getNotifications(String userId) async {
+  final response = await _db
+      .from('notifications')
+      .select()
+      .eq('user_id', userId)
+      .order('created_at', ascending: false);
+  return List<Map<String, dynamic>>.from(response);
+}
+
+static Future<void> markNotificationRead(String id) async {
+  await _db.from('notifications').update({'is_read': true}).eq('id', id);
+}
+
 }

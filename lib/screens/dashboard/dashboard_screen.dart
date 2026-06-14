@@ -17,10 +17,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    final auth = context.read<AuthProvider>();
-    if (auth.user != null) {
-      context.read<CycleProvider>().loadCycles(auth.user!.id);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+  final auth = context.read<AuthProvider>();
+  if (auth.user != null) {
+    context.read<CycleProvider>().loadCycles(auth.user!.id);
+  }
+});
   }
 
   @override
@@ -43,6 +45,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   Text('Hello, ${auth.user!.displayName}',
                       style: Theme.of(context).textTheme.headlineMedium),
+                  const SizedBox(height: 4),
+                  Text('Remember, you’re stronger than you think 💪',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontStyle: FontStyle.italic,
+                            color: AppColors.textSecondary,
+                          )),
                   const SizedBox(height: 24),
                   // Next period card
                   Card(
@@ -71,8 +79,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Quick actions
-                  Row(
+                  // Quick actions – now in a Wrap to fit 4 items
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
                     children: [
                       _QuickAction(
                         icon: Icons.edit_calendar,
@@ -80,19 +90,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         onTap: () =>
                             Navigator.pushNamed(context, '/calendar'),
                       ),
-                      const SizedBox(width: 12),
                       _QuickAction(
                         icon: Icons.note_add,
                         label: 'Symptom',
                         onTap: () =>
-                            Navigator.pushNamed(context, '/symptom'),  // ✅ fixed route
+                            Navigator.pushNamed(context, '/symptom'),
                       ),
-                      const SizedBox(width: 12),
                       _QuickAction(
                         icon: Icons.school,
                         label: 'Education',
                         onTap: () =>
                             Navigator.pushNamed(context, '/education'),
+                      ),
+                      _QuickAction(
+                        icon: Icons.list_alt,
+                        label: 'My Symptoms',
+                        onTap: () =>
+                            Navigator.pushNamed(context, '/symptom-history'),
                       ),
                     ],
                   ),
@@ -133,7 +147,11 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    // Use a fixed width for consistency in Wrap
+    final availableWidth = MediaQuery.of(context).size.width - 48;
+    final itemWidth = (availableWidth - 12) / 2; // 2 per row on most phones
+    return SizedBox(
+      width: itemWidth.clamp(120, 180),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
