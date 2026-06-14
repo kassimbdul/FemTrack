@@ -1,4 +1,3 @@
-// lib/screens/auth/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -81,7 +80,7 @@ class _WideLayout extends StatelessWidget {
             child: const Center(
               child: Padding(
                 padding: EdgeInsets.all(40),
-                child: _BrandPanel(),
+                child: _BrandPanel(compact: false),
               ),
             ),
           ),
@@ -127,9 +126,15 @@ class _NarrowLayout extends StatelessWidget {
         children: [
           Container(
             width: double.infinity,
-            height: 220,
             decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
-            child: const Center(child: _BrandPanel()),
+            // Flexible brand panel – no fixed height
+            child: const SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(24, 40, 24, 24),
+                child: _BrandPanel(compact: true),
+              ),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(24),
@@ -147,33 +152,46 @@ class _NarrowLayout extends StatelessWidget {
 
 // ── Brand panel ─────────────────────────────────────────────────────────────
 class _BrandPanel extends StatelessWidget {
-  const _BrandPanel();
+  final bool compact;
+  const _BrandPanel({this.compact = false});
 
   @override
   Widget build(BuildContext context) {
+    final double iconSize = compact ? 48.0 : 72.0;
+    final double titleSize = compact ? 22.0 : 28.0;
+    final double spacing = compact ? 12.0 : 20.0;
+    final double smallSpacing = compact ? 6.0 : 8.0;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 72, height: 72,
+          width: iconSize, height: iconSize,
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(compact ? 14 : 20),
           ),
-          child: const Icon(Icons.water_drop_rounded, color: Colors.white, size: 40),
+          child: Icon(Icons.water_drop_rounded,
+              color: Colors.white, size: iconSize * 0.55),
         ),
-        const SizedBox(height: 20),
-        const Text('FemTrack',
-            style: TextStyle(color: Colors.white, fontSize: 28,
-                fontWeight: FontWeight.w800, letterSpacing: 2)),
-        const SizedBox(height: 8),
+        SizedBox(height: spacing),
+        Text('FemTrack',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: titleSize,
+                fontWeight: FontWeight.w800,
+                letterSpacing: compact ? 1.5 : 2)),
+        SizedBox(height: smallSpacing),
         Text('Menstrual Health Platform',
-            style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 14)),
-        const SizedBox(height: 24),
+            style: TextStyle(
+                color: Colors.white.withOpacity(0.85),
+                fontSize: compact ? 12 : 14)),
+        SizedBox(height: spacing),
+        // Feature pills
         const _FeaturePill('Track your cycle with precision'),
-        const SizedBox(height: 8),
+        SizedBox(height: smallSpacing),
         const _FeaturePill('Health education & tips'),
-        const SizedBox(height: 8),
+        SizedBox(height: smallSpacing),
         const _FeaturePill('Smart period prediction'),
       ],
     );
@@ -197,7 +215,10 @@ class _FeaturePill extends StatelessWidget {
         children: [
           const Icon(Icons.check_circle_outline, color: Colors.white, size: 16),
           const SizedBox(width: 8),
-          Text(text, style: const TextStyle(color: Colors.white, fontSize: 13)),
+          Flexible(
+            child: Text(text,
+                style: const TextStyle(color: Colors.white, fontSize: 13)),
+          ),
         ],
       ),
     );
